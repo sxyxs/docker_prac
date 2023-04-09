@@ -1,6 +1,7 @@
 ARG UBUNTU_VERSION=20.04
 ARG CUDA_VERSION=11.7.1
 # gcc 9.4.0
+
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu${UBUNTU_VERSION}
 # assign your miniconda3 version https://docs.conda.io/en/latest/miniconda.html
 ARG MINICONDA=Miniconda3-py39_23.1.0-1-Linux-x86_64.sh
