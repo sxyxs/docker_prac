@@ -1,12 +1,11 @@
 ARG UBUNTU_VERSION=20.04
 ARG CUDA_VERSION=11.7.1
 # gcc 9.4.0
-
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu${UBUNTU_VERSION}
 # assign your miniconda3 version https://docs.conda.io/en/latest/miniconda.html
 ARG MINICONDA=Miniconda3-py39_23.1.0-1-Linux-x86_64.sh
 # assign your nvcc version https://anaconda.org/conda-forge/cudatoolkit-dev/files?page=2
-ARG CUDA_VERSION=11.3
+ARG CUDA_VERSION=11.1
 
 # Install ubuntu packages
 RUN apt-get update && \
@@ -51,7 +50,7 @@ RUN touch $HOME/.bashrc && \
 # RUN conda create --name proj python=3.9 -y
 # SHELL ["conda", "run", "-n", "proj", "/bin/bash", "-c"]
 # command from pytorch.org
-RUN conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch -c conda-forge
+RUN pip install torch==1.9.1+cu111 torchvision==0.10.1+cu111 torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
 RUN conda clean -ya
 RUN conda install -c conda-forge cudatoolkit-dev=${CUDA_VERSION}  -y
 
