@@ -1,27 +1,19 @@
-ARG UBUNTU_VERSION=20.04
-ARG CUDA_VERSION=11.7.1
-# gcc 9.4.0
-FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu${UBUNTU_VERSION}
-# assign your miniconda3 version https://docs.conda.io/en/latest/miniconda.html
-ARG MINICONDA=Miniconda3-py39_23.1.0-1-Linux-x86_64.sh
-# assign your nvcc version https://anaconda.org/conda-forge/cudatoolkit-dev/files?page=2
-ARG CUDA_VERSION=11.1
+# https://hub.docker.com/r/pytorch/pytorch/tags?page=1&name=1.10.0
+# this is the base image contains gcc 7.5 and nvcc available
+FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
 
 # Install ubuntu packages
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
         build-essential \
         git \
-        byobu \
-        zip \
-        wget \
         curl \
         ca-certificates \
+        sudo \
         locales \
         openssh-server \
-        ffmpeg \
-        libsm6 \
-        libxext6 \
+        nano \
         vim && \
     # Remove the effect of `apt-get update`
     rm -rf /var/lib/apt/lists/* && \
@@ -36,29 +28,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ####################################################################################
 # START USER SPECIFIC COMMANDS
 ####################################################################################
-# Install miniconda (python)
-# Referenced PyTorch's Dockerfile:
-#   https://github.com/pytorch/pytorch/blob/master/docker/pytorch/Dockerfile
-RUN curl -o miniconda.sh https://repo.anaconda.com/miniconda/${MINICONDA} && \
-    chmod +x miniconda.sh && \
-    ./miniconda.sh -b -p conda && \
-    rm miniconda.sh 
-ENV PATH $HOME/conda/bin:$PATH
-RUN touch $HOME/.bashrc && \
-    echo "export PATH=$HOME/conda/bin:$PATH" >> $HOME/.bashrc && \
-    conda init bash
-# RUN conda create --name proj python=3.9 -y
-# SHELL ["conda", "run", "-n", "proj", "/bin/bash", "-c"]
-# command from pytorch.org
-RUN pip install torch==1.9.1+cu111 torchvision==0.10.1+cu111 torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
-RUN conda clean -ya
-RUN conda install -c conda-forge cudatoolkit-dev=${CUDA_VERSION}  -y
 
-#######################################################################################
-# Project specific
-#######################################################################################
-# COPY requirements.txt requirements.txt
-# RUN pip install -r requirements.txt
+RUN python -m pip install detectron2==0.5 -f \
+  https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html
 
-# Start openssh server
-USER root
