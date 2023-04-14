@@ -29,6 +29,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # START USER SPECIFIC COMMANDS
 ####################################################################################
 
+ENTRYPOINT service ssh restart && bash
+
 RUN python -m pip install detectron2==0.5 -f \
   https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html
 
