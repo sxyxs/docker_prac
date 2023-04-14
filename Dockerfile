@@ -2,6 +2,8 @@
 # this is the base image contains gcc 7.5 and nvcc available
 FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
 
+ARG PYTHON_VERSION=3.6.5 
+
 # Install ubuntu packages
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub && \
     apt-get update && \
