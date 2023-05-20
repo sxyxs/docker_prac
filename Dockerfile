@@ -1,6 +1,7 @@
 # https://hub.docker.com/r/pytorch/pytorch/tags?page=1&name=1.10.0
 # this is the base image contains gcc 7.5 and nvcc available
 FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-devel
+
 ARG MINICONDA=Miniconda3-py39_23.1.0-1-Linux-x86_64.sh
 # Install ubuntu packages
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub && \
@@ -35,9 +36,10 @@ RUN touch $HOME/.bashrc && \
 # RUN conda create --name proj python=3.9 -y
 # SHELL ["conda", "run", "-n", "proj", "/bin/bash", "-c"]
 # command from pytorch.org
-RUN conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
+RUN conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=10.2 -c pytorch
+# pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=10.2 -c pytorch 
 RUN conda clean -ya
-RUN conda install -c conda-forge cudatoolkit-dev=${CUDA_VERSION}  -y
+
 
 #######################################################################################
 # Project specific
@@ -47,5 +49,4 @@ RUN conda install -c conda-forge cudatoolkit-dev=${CUDA_VERSION}  -y
 
 # Start openssh server
 USER root
-
 
