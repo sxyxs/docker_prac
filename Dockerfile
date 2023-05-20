@@ -1,8 +1,6 @@
 # https://hub.docker.com/r/pytorch/pytorch/tags?page=1&name=1.10.0
 # this is the base image contains gcc 7.5 and nvcc available
-FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
-
-ARG PYTHON_VERSION=3.6.5 
+FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-devel
 
 # Install ubuntu packages
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub && \
@@ -15,7 +13,6 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/
         sudo \
         locales \
         openssh-server \
-        nano \
         vim && \
     # Remove the effect of `apt-get update`
     rm -rf /var/lib/apt/lists/* && \
@@ -27,12 +24,28 @@ ENV LANG en_US.utf8
 ENV TZ=Australia/Adelaide
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-####################################################################################
-# START USER SPECIFIC COMMANDS
-####################################################################################
+RUN curl -o miniconda.sh https://repo.anaconda.com/miniconda/${MINICONDA} && \
+    chmod +x miniconda.sh && \
+    ./miniconda.sh -b -p conda && \
+    rm miniconda.sh 
+ENV PATH $HOME/conda/bin:$PATH
+RUN touch $HOME/.bashrc && \
+    echo "export PATH=$HOME/conda/bin:$PATH" >> $HOME/.bashrc && \
+    conda init bash
+# RUN conda create --name proj python=3.9 -y
+# SHELL ["conda", "run", "-n", "proj", "/bin/bash", "-c"]
+# command from pytorch.org
+RUN conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
+RUN conda clean -ya
+RUN conda install -c conda-forge cudatoolkit-dev=${CUDA_VERSION}  -y
 
-ENTRYPOINT service ssh restart && bash
+#######################################################################################
+# Project specific
+#######################################################################################
+# COPY requirements.txt requirements.txt
+# RUN pip install -r requirements.txt
 
-RUN python -m pip install detectron2==0.5 -f \
-  https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html
+# Start openssh server
+USER root
+
 
