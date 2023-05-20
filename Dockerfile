@@ -1,7 +1,7 @@
 # https://hub.docker.com/r/pytorch/pytorch/tags?page=1&name=1.10.0
 # this is the base image contains gcc 7.5 and nvcc available
 FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-devel
-
+ARG MINICONDA=Miniconda3-py39_23.1.0-1-Linux-x86_64.sh
 # Install ubuntu packages
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub && \
     apt-get update && \
